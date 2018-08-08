@@ -21,6 +21,8 @@ class ViewController: UIViewController {
         let camera = LuminaViewController()
         camera.delegate = self
         
+        camera.position = .back
+        camera.resolution = .vga640x480
         camera.setCancelButton(visible: false)
         camera.captureDepthData = true
         camera.streamDepthData = true
@@ -36,6 +38,10 @@ class ViewController: UIViewController {
 }
 
 extension ViewController : LuminaDelegate {
+    func streamed(videoFrame: UIImage, with predictions: [LuminaRecognitionResult]?, from controller: LuminaViewController) {
+        
+    }
+    
     func captured(stillImage: UIImage, livePhotoAt: URL?, depthData: Any?, from controller: LuminaViewController) {
         controller.dismiss(animated: true) {
             // still images always come back through this function, but live photos and depth data are returned here as well for a given still image
@@ -46,6 +52,8 @@ extension ViewController : LuminaDelegate {
             // save depth image if possible
             print("trying to save depth image")
             if #available(iOS 11.0, *) {
+                print( "depthData -> \(type(of:depthData))")
+                
                 if let data = depthData as? AVDepthData {
                     guard let depthImage = data.depthDataMap.normalizedImage(with: controller.position) else {
                         print("could not convert depth data")
