@@ -12,6 +12,8 @@ import AVKit
 
 class ViewController: UIViewController {
     
+    var depthView: UIImageView?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -75,6 +77,26 @@ extension ViewController : LuminaDelegate {
             
             // save color image
             CustomPhotoAlbum.shared.save(image: stillImage)
+        }
+    }
+    
+    func streamed(depthData: Any, from controller: LuminaViewController) {
+        if #available(iOS 11.0, *) {
+            if let data = depthData as? AVDepthData {
+                guard let image = data.depthDataMap.normalizedImage(with: controller.position) else {
+                    print("could not convert depth data")
+                    return
+                }
+                if let imageView = self.depthView {
+                    imageView.removeFromSuperview()
+                }
+                let newView = UIImageView(frame: CGRect(x: controller.view.frame.minX, y: controller.view.frame.maxY - 300, width: 200, height: 200))
+                newView.image = image
+                newView.contentMode = .scaleAspectFit
+                newView.backgroundColor = UIColor.clear
+                controller.view.addSubview(newView)
+                controller.view.bringSubview(toFront: newView)
+            }
         }
     }
 }
