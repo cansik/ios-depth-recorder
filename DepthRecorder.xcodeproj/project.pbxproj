@@ -15,6 +15,7 @@
 		AB9E6E58211B36D600025D9B /* Lumina.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB9E6E57211B36D600025D9B /* Lumina.framework */; };
 		AB9E6E59211B36E200025D9B /* Lumina.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB9E6E57211B36D600025D9B /* Lumina.framework */; };
 		AB9E6E5A211B36E200025D9B /* Lumina.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = AB9E6E57211B36D600025D9B /* Lumina.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		AB9E6E5D211B3D1300025D9B /* CustomPhotoAlbum.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB9E6E5C211B3D1300025D9B /* CustomPhotoAlbum.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -40,6 +41,7 @@
 		AB9E6E4F211B36A300025D9B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		AB9E6E51211B36A300025D9B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AB9E6E57211B36D600025D9B /* Lumina.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Lumina.framework; sourceTree = "<group>"; };
+		AB9E6E5C211B3D1300025D9B /* CustomPhotoAlbum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPhotoAlbum.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,6 +83,7 @@
 				AB9E6E4C211B36A300025D9B /* Assets.xcassets */,
 				AB9E6E4E211B36A300025D9B /* LaunchScreen.storyboard */,
 				AB9E6E51211B36A300025D9B /* Info.plist */,
+				AB9E6E5C211B3D1300025D9B /* CustomPhotoAlbum.swift */,
 			);
 			path = DepthRecorder;
 			sourceTree = "<group>";
@@ -157,6 +160,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AB9E6E5D211B3D1300025D9B /* CustomPhotoAlbum.swift in Sources */,
 				AB9E6E48211B36A200025D9B /* ViewController.swift in Sources */,
 				AB9E6E46211B36A200025D9B /* AppDelegate.swift in Sources */,
 			);

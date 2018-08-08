@@ -25,9 +25,13 @@
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Record Images and Video</string>
+	<string>To record depth images.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Record Video</string>
+	<string>To record videos with audio.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>To show recorded data.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>To save recorded data.</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
