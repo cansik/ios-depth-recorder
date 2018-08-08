@@ -22,7 +22,7 @@ class ViewController: UIViewController {
         camera.delegate = self
         
         camera.position = .back
-        camera.resolution = .vga640x480
+        camera.resolution = .medium1280x720
         camera.setCancelButton(visible: false)
         camera.captureDepthData = true
         camera.streamDepthData = true
