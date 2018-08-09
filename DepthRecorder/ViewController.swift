@@ -126,6 +126,7 @@ extension ViewController : LuminaDelegate {
                 }
                 
                 // memory issue!
+                /*
                 if let imageView = self.depthView {
                     imageView.removeFromSuperview()
                 }
@@ -135,6 +136,7 @@ extension ViewController : LuminaDelegate {
                 newView.backgroundColor = UIColor.clear
                 controller.view.addSubview(newView)
                 controller.view.bringSubview(toFront: newView)
+                */
             }
         }
     }
