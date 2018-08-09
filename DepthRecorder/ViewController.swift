@@ -24,7 +24,7 @@ class ViewController: UIViewController {
         camera.delegate = self
         
         camera.position = .back
-        camera.resolution = .medium1280x720
+        camera.resolution = .vga640x480
         camera.setCancelButton(visible: false)
         camera.captureDepthData = true
         camera.streamDepthData = true
@@ -45,48 +45,59 @@ extension ViewController : LuminaDelegate {
     }
     
     func captured(stillImage: UIImage, livePhotoAt: URL?, depthData: Any?, from controller: LuminaViewController) {
-        controller.dismiss(animated: true) {
-            // still images always come back through this function, but live photos and depth data are returned here as well for a given still image
-            // depth data must be manually cast to AVDepthData, as AVDepthData is only available in iOS 11.0 or higher.
-            
-            //UIImageWriteToSavedPhotosAlbum(stillImage, nil, nil, nil)
-            
-            // save depth image if possible
-            print("trying to save depth image")
-            if #available(iOS 11.0, *) {
-                print( "depthData -> \(type(of:depthData))")
+        // save color image
+        CustomPhotoAlbum.shared.save(image: stillImage)
+        
+        // save depth image if possible
+        print("trying to save depth image")
+        if #available(iOS 11.0, *) {
+            if var data = depthData as? AVDepthData {
+                // be sure its DisparityFloat32
+                if data.depthDataType != kCVPixelFormatType_DisparityFloat32 {
+                    data = data.converting(toDepthDataType: kCVPixelFormatType_DisparityFloat32)
+                }
                 
-                if let data = depthData as? AVDepthData {
-                    guard let depthImage = data.depthDataMap.normalizedImage(with: controller.position) else {
-                        print("could not convert depth data")
-                        return
-                    }
-                    
-                    print("saving depth image")
-                    CustomPhotoAlbum.shared.save(image: depthImage)
+        
+                guard let depthImage = data.depthDataMap.normalizedImage(with: controller.position) else {
+                    print("could not convert depth data")
+                    return
                 }
-                else
-                {
-                    print("data is not depth data")
-                }
+              
+                print("depthDataType: \(data.depthDataType)")
+                print("depthDataAccuracy: \(data.depthDataAccuracy.rawValue)")
+                print("depthDataQuality: \(data.depthDataQuality.rawValue)")
+                print("availableDepthDataTypes: \(data.availableDepthDataTypes)")
+                
+
+                print("saving depth image")
+                CustomPhotoAlbum.shared.save(image: depthImage)
+                //UIImageWriteToSavedPhotosAlbum(depthImage, nil, nil, nil)
             }
             else
             {
-                print("not on ios 11.0")
+                print("data is not depth data")
             }
-            
-            // save color image
-            CustomPhotoAlbum.shared.save(image: stillImage)
+        }
+        else
+        {
+            print("not on ios 11.0")
         }
     }
     
     func streamed(depthData: Any, from controller: LuminaViewController) {
         if #available(iOS 11.0, *) {
-            if let data = depthData as? AVDepthData {
+            if var data = depthData as? AVDepthData {
+                
+                // be sure its DisparityFloat32
+                if data.depthDataType != kCVPixelFormatType_DisparityFloat32 {
+                    data = data.converting(toDepthDataType: kCVPixelFormatType_DisparityFloat32)
+                }
+
                 guard let image = data.depthDataMap.normalizedImage(with: controller.position) else {
                     print("could not convert depth data")
                     return
                 }
+                
                 if let imageView = self.depthView {
                     imageView.removeFromSuperview()
                 }
