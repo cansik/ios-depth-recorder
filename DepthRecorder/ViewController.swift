@@ -13,6 +13,9 @@ import AVKit
 class ViewController: UIViewController {
     
     var depthView: UIImageView?
+    var storeNextDepthFrame = false
+    
+    let camera = LuminaViewController()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,15 +23,16 @@ class ViewController: UIViewController {
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        let camera = LuminaViewController()
         camera.delegate = self
         
         camera.position = .back
-        camera.resolution = .vga640x480
+        camera.resolution = .photo
         camera.setCancelButton(visible: false)
         camera.captureDepthData = true
         camera.streamDepthData = true
         camera.captureLivePhotos = false
+        
+        camera.textPrompt = "Depth Recorder"
         
         present(camera, animated: true, completion:nil)
     }
@@ -48,16 +52,18 @@ extension ViewController : LuminaDelegate {
         // save color image
         CustomPhotoAlbum.shared.save(image: stillImage)
         
+        storeNextDepthFrame = true
+        
         // save depth image if possible
         print("trying to save depth image")
         if #available(iOS 11.0, *) {
             if var data = depthData as? AVDepthData {
+                
                 // be sure its DisparityFloat32
                 if data.depthDataType != kCVPixelFormatType_DisparityFloat32 {
                     data = data.converting(toDepthDataType: kCVPixelFormatType_DisparityFloat32)
                 }
-                
-        
+
                 guard let depthImage = data.depthDataMap.normalizedImage(with: controller.position) else {
                     print("could not convert depth data")
                     return
@@ -71,7 +77,6 @@ extension ViewController : LuminaDelegate {
 
                 print("saving depth image")
                 CustomPhotoAlbum.shared.save(image: depthImage)
-                //UIImageWriteToSavedPhotosAlbum(depthImage, nil, nil, nil)
             }
             else
             {
@@ -87,17 +92,40 @@ extension ViewController : LuminaDelegate {
     func streamed(depthData: Any, from controller: LuminaViewController) {
         if #available(iOS 11.0, *) {
             if var data = depthData as? AVDepthData {
-                
+        
                 // be sure its DisparityFloat32
                 if data.depthDataType != kCVPixelFormatType_DisparityFloat32 {
                     data = data.converting(toDepthDataType: kCVPixelFormatType_DisparityFloat32)
                 }
+                
+                // read center pixel
+                CVPixelBufferLockBaseAddress(data.depthDataMap, CVPixelBufferLockFlags(rawValue: 0))
+                let depthPointer = unsafeBitCast(CVPixelBufferGetBaseAddress(data.depthDataMap), to: UnsafeMutablePointer<Float32>.self)
+                
+                let width = CVPixelBufferGetWidth(data.depthDataMap)
+                let height = CVPixelBufferGetHeight(data.depthDataMap)
+                
+                let point = CGPoint(x: width / 2 , y: height / 2)
+                let distanceAtXYPoint = depthPointer[Int(point.y * CGFloat(width) + point.x)]
+                
+                let accuracyType = (data.depthDataAccuracy == .absolute) ? "abs" : "rel"
+                
+                self.camera.textPrompt = "Depth (\(accuracyType)): \(distanceAtXYPoint)"
 
+                // convert image
                 guard let image = data.depthDataMap.normalizedImage(with: controller.position) else {
                     print("could not convert depth data")
                     return
                 }
                 
+                if(storeNextDepthFrame)
+                {
+                    print("saving depth frame from stream!")
+                    CustomPhotoAlbum.shared.save(image: image)
+                    storeNextDepthFrame = false
+                }
+                
+                // memory issue!
                 if let imageView = self.depthView {
                     imageView.removeFromSuperview()
                 }
